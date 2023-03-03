@@ -5,11 +5,12 @@
 // Extra for Experts:
 // - describe what you did to take this project "above and beyond"
 
+let valueThing = random(500);
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   background(255);
-  everyBox(100, 100);
+  everyBox(valueThing, valueThing);
 }
 
 function draw() {
