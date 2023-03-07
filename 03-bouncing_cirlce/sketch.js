@@ -8,7 +8,6 @@ function draw() {
   background(220);
   displayShapes();
   moveShapes();
-  bounceachother();
 }
 
 function moveShapes(){
@@ -23,14 +22,6 @@ function moveShapes(){
     }
   }
 }
-
-// function bounceachother(){
-//   for (let n=0; n<shapes.length; n++){
-//     for (let i=0; i<shapes.length; i++){
-//       if (shapes[n].x > shapes[i].x + shapes[i].diameter/2  && shapes[n].x > shapes[i].x - shapes[i].diameter/2 ){
-//         shapes[i].dy =shapes[i].dy * -1;
-//       }
-// }
 
 function mousePressed(){
   createBall(mouseX, mouseY);
