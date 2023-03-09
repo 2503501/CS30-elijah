@@ -1,2 +1,5 @@
 ## goodies
-- jsdshJHshjSASjhsJHGshdajkdghjahghdhjkagdjD
+
+
+## projects
+- [Arrays and Object Notation](array-assignment)
