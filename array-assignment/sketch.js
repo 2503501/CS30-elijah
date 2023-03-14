@@ -7,24 +7,32 @@
 
 let boxes = [];
 let angle = 0;
+let maxD;
 
 function setup() {
-  createCanvas(windowWidth, windowHeight);
-}
+  createCanvas(windowWidth, windowHeight, WEBGL);
+  maxD = dist(0,0, 200, 200); //increases follwing distance 
 
-for (let i = 0; i < width; i += 50){
-  spawnBox(i, height/2, 0);
-  // rect(i, height/2, 50, 200);
+  for (let z = 0; z < height + 200; z += 50){
+    for (let i = 350; i < width - 350 ; i += 50){
+      spawnBox(i, 0, z - 200, 200);
+    }
+  }
 }
 
 
 function draw() {
   background(220);
-  angle = angle + 0.1;
+  angle = angle - 0.1; //increases speed from -1 to 1
+  let offset = 0;
+  rotateX(-PI/4);
+  
 
   for (let i = 0; i < boxes.length; i++) {
-    boxes[i].boxheight = map(sin(angle), -1, 1, 0, 100);
-    // spawnBox(i, height/2, map(sin(angle), -1, 1, 0, 100));
+    let d = dist(boxes[i].x, boxes[i].z, width/2, height/3);
+    offset = map(d, 0, maxD, -1, 1);
+    let a = angle + offset;
+    boxes[i].boxheight = map(sin(a), -1, 1, 0, 300);
   }
 
   for (let i = 0; i < boxes.length; i++) {
@@ -33,10 +41,11 @@ function draw() {
 }
 
 
-function spawnBox(theX, theY, heightsize) {
+function spawnBox(theX, theY, theZ, heightsize) {
   let someBox = {
     x: theX,
     y: theY,
+    z: theZ,
     boxheight: heightsize,
   };
   boxes.push(someBox);
@@ -45,7 +54,7 @@ function spawnBox(theX, theY, heightsize) {
 function displayBox(myBox) {
   push(); //saving the transformation matrix
   rectMode(CENTER);
-  translate(myBox.x, myBox.y);
-  rect(0 + 25, 0, 50, myBox.boxheight);
+  translate(myBox.x - width/2, 100, myBox.z  - width/3 );
+  box(50, myBox.boxheight, 50, 0);
   pop(); //resetting the transformation matrix
 }
