@@ -8,15 +8,20 @@
 let boxes = [];
 let angle = 0;
 let maxD;
-let r = 0;
-let b = 5;
-let g = 20;
-let rValue = true;
+let offsetX;
+let offsetY;
+let PosOrNegWave = 0.1;
+
+let colors = [60,124,123];
+let colorsStatus = [true,true,true];
+let colorchange = 3;
 
 
 function setup() {
   createCanvas(windowWidth, windowHeight, WEBGL);
   maxD = dist(0,0, 200, 200); //increases follwing distance 
+  offsetX = width/2;
+  offsetY = height/3; 
 
   for (let z = 0; z < height + 200; z += 50){
     for (let i = 200; i < width - 200 ; i += 50){
@@ -28,14 +33,14 @@ function setup() {
 
 function draw() {
   background(220);
-  angle = angle - 0.1; //increases speed from -1 to 1
+  angle = angle + PosOrNegWave; //increases speed from -1 to 1
   let offset;
   rotateX(-PI/4);
   colorChange();
   
 
   for (let i = 0; i < boxes.length; i++) {
-    let d = dist(boxes[i].x, boxes[i].z, width/2, height/3);
+    let d = dist(boxes[i].x, boxes[i].z, offsetX, offsetY);
     offset = map(d, 0, maxD, -1, 1);
     let a = angle + offset;
     boxes[i].boxheight = map(sin(a), -1, 1, 0, 300);
@@ -46,6 +51,15 @@ function draw() {
   }
 }
 
+function mousePressed(){
+  for (let i =0; i <colors.length;i++){
+    colors[i] = random(26,224);
+  }
+  colorchange = random(10);
+  offsetX = mouseX;
+  offsetY = mouseY;
+  PosOrNegWave = PosOrNegWave *-1;
+}
 
 function spawnBox(theX, theY, theZ, heightsize) {
   let someBox = {
@@ -63,28 +77,23 @@ function displayBox(myBox) {
   translate(myBox.x - width/2, 100, myBox.z  - width/3 );
   stroke("black");
 
-  fill(r, b, g);
+  fill(colors[0], colors[1], colors[2]);
   box(50, myBox.boxheight, 50, 0);
   pop(); //resetting the transformation matrix
 }
 
-function colorChange(colors, redvalue, greenvalue, bluevalue){
-  if (rValue){
-    r++;
-  }
-  else{
-    r--;
-  }
-  if (r=== 255 || r===0){
-    rValue = !rValue;
-  }
-  // b++;
-  // if (b=== 255){
-  //   b = 0;
-  // }
-  // g++;
-  // if (g=== 255){
-  //   g = 0;
-  // }
+function colorChange(){
 
+  for (let i =0; i <colors.length;i++){
+    if (colorsStatus[i]){
+      colors[i] += colorchange;
+    }
+    else{
+      colors[i] -= colorchange;
+    }
+
+    if (colors[i] >=225|| colors[i] <=25){
+      colorsStatus[i] = !colorsStatus[i];
+    }
+  }
 }
