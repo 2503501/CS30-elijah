@@ -3,7 +3,11 @@
 // March 8th 2023
 //
 // Extra for Experts:
-// - describe what you did to take this project "above and beyond"
+// used WEBGL to make a 3d scene
+//
+//controls:
+//click anywhere to make the waves go in relation to where you clicked
+//press enter to switch from color more to blank mode, and vise versa
 
 let boxes = [];
 let angle = 0;
@@ -14,6 +18,7 @@ let PosOrNegWave = 0.1;
 
 let colors = [60,124,123];
 let colorsStatus = [true,true,true];
+let colorornot = true;
 let colorchange = 3;
 
 
@@ -52,9 +57,12 @@ function draw() {
 }
 
 function mousePressed(){
-  for (let i =0; i <colors.length;i++){
-    colors[i] = random(26,224);
+  if (colorornot){
+    for (let i =0; i <colors.length;i++){
+      colors[i] = random(26,224);
+    }
   }
+  
   colorchange = random(10);
   offsetX = mouseX;
   offsetY = mouseY;
@@ -74,7 +82,7 @@ function spawnBox(theX, theY, theZ, heightsize) {
 function displayBox(myBox) {
   push(); //saving the transformation matrix
   rectMode(CENTER);
-  translate(myBox.x - width/2, 100, myBox.z  - width/3 );
+  translate(myBox.x - width/2, 125, myBox.z  - width/3 );
   stroke("black");
 
   fill(colors[0], colors[1], colors[2]);
@@ -83,17 +91,35 @@ function displayBox(myBox) {
 }
 
 function colorChange(){
+  if (colorornot){
+    for (let i =0; i <colors.length;i++){
+      if (colorsStatus[i]){
+        colors[i] += colorchange;
+      }
+      else{
+        colors[i] -= colorchange;
+      }
 
-  for (let i =0; i <colors.length;i++){
-    if (colorsStatus[i]){
-      colors[i] += colorchange;
-    }
-    else{
-      colors[i] -= colorchange;
-    }
-
-    if (colors[i] >=225|| colors[i] <=25){
-      colorsStatus[i] = !colorsStatus[i];
+      if (colors[i] >=225|| colors[i] <=25){
+        colorsStatus[i] = !colorsStatus[i];
+      }
     }
   }
+}
+
+function keyTyped(){
+  if (keyIsDown(ENTER)){
+    colorornot = !colorornot;
+    if (colorornot){
+      for (let i =0; i <colors.length;i++){
+        colors[i] = random(26,224);
+      }
+    }
+    else{
+      for (let i =0; i <colors.length;i++){
+        colors[i] = 255;
+      }
+    }
+  }
+
 }

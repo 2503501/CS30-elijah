@@ -1,4 +1,5 @@
 ## goodies
+- [Perlin and Timing](06-perlin)
 
 
 ## projects
