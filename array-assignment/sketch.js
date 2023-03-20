@@ -33,7 +33,7 @@ function setup() {
   //create screen
   createCanvas(windowWidth, windowHeight, WEBGL);
   
-  // a constant value that is used as a max point for calculating offset, increasing it will make the wave less wavy
+  // a value that is used as a max point for calculating offset, increasing it will make the wave less wavy
   maxD = dist(0,0, 200, 200); 
   
   // start the offset value x and y in the middle of the cubes
@@ -52,7 +52,7 @@ function setup() {
 function draw() {
   background(220);
   
-  // a constant that will constantly increase by 0.1
+  // a value that will constantly increase by 0.1 . every cycle the cube height will change 0.1
   angle = angle + PosOrNegWave; 
   
   // rotate for better visibility
