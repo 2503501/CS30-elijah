@@ -1,5 +1,6 @@
 ## goodies
 - [Perlin and Timing](06-perlin)
+- [color game](08-colorgame)
 
 
 ## projects
