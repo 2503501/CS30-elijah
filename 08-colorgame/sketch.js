@@ -1,8 +1,8 @@
 // Color game
 
 
-const ROW = 8;
-const COLS = 8;
+const ROW = 40;
+const COLS = 40;
 let grid;
 let cellSize;
 
@@ -27,11 +27,13 @@ function mousePressed(){
   let x = Math.floor(mouseX/cellSize);
   let y = Math.floor(mouseY/cellSize);
 
-  toggleCell(x + 1,y);
-  toggleCell(x - 1,y);
-  toggleCell(x,y + 1);
-  toggleCell(x,y - 1);
-  toggleCell(x,y);
+  if (x <= ROW -1){
+    toggleCell(x + 1,y);
+    toggleCell(x - 1,y);
+    toggleCell(x,y + 1);
+    toggleCell(x,y - 1);
+    toggleCell(x,y);
+  }
 
 }
 
