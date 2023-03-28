@@ -12,32 +12,21 @@ let grid = [];
 
 
 // define pieces 
-let blackBishop;
-let blackKing;
-let blackKnight;
-let blackPawn;
-let blackQueen;
-let blackRook;
-let whiteBishop;
-let whiteKing;
-let whiteKnight;
-let whitePawn;
-let whiteQueen;
-let whiteRook;
+let bBishop_png, bKing_png, bPawn_png, bKnight_png, bQueen_png, bRook_png, wBishop_png, wKing_png, wKnight_png, wPawn_png, wQueen_png, wRook_png;
 
 function preload(){
-  blackBishop = loadImage("blackbishop.png");
-  blackKing = loadImage("blackking.png");
-  blackKnight = loadImage("blackknight.png");
-  blackPawn = loadImage("blackpawn.png");
-  blackQueen = loadImage("blackqueen.png");
-  blackRook = loadImage("blackrook.png");
-  whiteBishop = loadImage("whitebishop.png");
-  whiteKing = loadImage("whiteking.png");
-  whiteKnight = loadImage("whiteknight.png");
-  whitePawn = loadImage("whitepawn.png");
-  whiteQueen = loadImage("whitequeen.png");
-  whiteRook = loadImage("whiterook.png");
+  bBishop_png = loadImage("blackbishop.png");
+  bKing_png = loadImage("blackking.png");
+  bKnight_png = loadImage("blackknight.png");
+  bPawn_png = loadImage("blackpawn.png");
+  bQueen_png = loadImage("blackqueen.png");
+  bRook_png = loadImage("blackrook.png");
+  wBishop_png = loadImage("whitebishop.png");
+  wKing_png = loadImage("whiteking.png");
+  wKnight_png = loadImage("whiteknight.png");
+  wPawn_png = loadImage("whitepawn.png");
+  wQueen_png = loadImage("whitequeen.png");
+  wRook_png = loadImage("whiterook.png");
 }
 
 function setup() {
@@ -86,10 +75,24 @@ function startingGrid(){
 function drawBoard(){
   for (let y = 0; y < ROWS; y++){
     for (let x = 0; x < ROWS; x++){
-      if (grid[y][x] === "bPawn"){
-        image(blackPawn, x * cellsize + width/2 - cellsize *4, y * cellsize + height/2 - cellsize *4, cellsize, cellsize );
+      if (grid[y][x] !== "0"){
+        image(eval(PNG_converter(grid[y][x])), x * cellsize + width/2 - cellsize *4, y * cellsize + height/2 - cellsize *4, cellsize, cellsize );
       }
     }
 
   }
+}
+
+function PNG_converter(picname){
+  let returner = picname;
+  returner = returner + "_png";
+  return returner;
+
+}
+
+function mousePressed() {
+  let x = Math.floor(mouseX/cellsize - (width/2 - cellsize *4 )/cellsize);
+  let y = Math.floor(mouseY/cellsize - (height/2 - cellsize *4 )/cellsize);
+  console.log(x);
+  console.log(y);
 }
