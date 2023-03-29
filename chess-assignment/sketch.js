@@ -9,6 +9,11 @@ const ROWS = 8;
 let cellsize;
 let chessboardheightcontroller;
 let grid = [];
+let pieceSlected = false;
+let pieceStorer;
+let piecelocationstorerX;
+let piecelocationstorerY;
+let Whiteturn = true;
 
 
 // define pieces 
@@ -39,6 +44,7 @@ function setup() {
 function draw() {
   background(200);
   drawGrid();
+  showHighlight();
   drawBoard();
 }
 
@@ -87,12 +93,54 @@ function PNG_converter(picname){
   let returner = picname;
   returner = returner + "_png";
   return returner;
-
 }
+
+function showHighlight(){
+  if (pieceSlected){
+    fill("red");
+    rect(piecelocationstorerX * cellsize + width/2 - cellsize *4, piecelocationstorerY * cellsize + height/2 - cellsize *4, cellsize, cellsize);
+  }
+}
+
 
 function mousePressed() {
-  let x = Math.floor(mouseX/cellsize - (width/2 - cellsize *4 )/cellsize);
-  let y = Math.floor(mouseY/cellsize - (height/2 - cellsize *4 )/cellsize);
-  console.log(x);
-  console.log(y);
+  if (!pieceSlected){
+    let x = Math.floor(mouseX/cellsize - (width/2 - cellsize *4 )/cellsize);
+    let y = Math.floor(mouseY/cellsize - (height/2 - cellsize *4 )/cellsize);
+    if (grid[y][x] !== "0" && grid[y][x] !== undefined ) {
+      if (Whiteturn &&  grid[y][x][0] === "w"){
+        pieceStorer = grid[y][x];
+        piecelocationstorerX = x;
+        piecelocationstorerY = y;
+        console.log(pieceStorer);
+        pieceSlected = true;
+      }
+      else if (!Whiteturn &&  grid[y][x][0] === "b"){
+        pieceStorer = grid[y][x];
+        piecelocationstorerX = x;
+        piecelocationstorerY = y;
+        console.log(pieceStorer);
+        pieceSlected = true;
+      }
+    }
+    else{
+      pieceSlected = false;
+    }
+  }
+  else if (pieceSlected){
+    let x = Math.floor(mouseX/cellsize - (width/2 - cellsize *4 )/cellsize);
+    let y = Math.floor(mouseY/cellsize - (height/2 - cellsize *4 )/cellsize);
+    if(x >= 0 && x < ROWS && y >= 0 && y < ROWS && !(x === piecelocationstorerX && y === piecelocationstorerY)){
+      grid[piecelocationstorerY][piecelocationstorerX] = "0";
+      grid[y][x] = pieceStorer;
+      pieceSlected = false;
+      Whiteturn = !Whiteturn;
+    }
+    else if (x === piecelocationstorerX && y === piecelocationstorerY){
+      pieceSlected = false;
+    }
+
+  }
 }
+
+
