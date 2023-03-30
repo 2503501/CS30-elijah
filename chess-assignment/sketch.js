@@ -9,6 +9,7 @@ const ROWS = 8;
 let cellsize;
 let chessboardheightcontroller;
 let grid = [];
+
 let pieceSlected = false;
 let pieceStorer;
 let piecelocationstorerX;
@@ -131,11 +132,14 @@ function mousePressed() {
     let x = Math.floor(mouseX/cellsize - (width/2 - cellsize *4 )/cellsize);
     let y = Math.floor(mouseY/cellsize - (height/2 - cellsize *4 )/cellsize);
     if(x >= 0 && x < ROWS && y >= 0 && y < ROWS && !(x === piecelocationstorerX && y === piecelocationstorerY)){
-      grid[piecelocationstorerY][piecelocationstorerX] = "0";
-      grid[y][x] = pieceStorer;
-      pieceSlected = false;
-      Whiteturn = !Whiteturn;
+      if(legalMovechecker(pieceStorer, piecelocationstorerX, piecelocationstorerY, x, y)  ){
+        grid[piecelocationstorerY][piecelocationstorerX] = "0";
+        grid[y][x] = pieceStorer;
+        pieceSlected = false;
+        Whiteturn = !Whiteturn;
+      }
     }
+    // if you click again on the piece you slected, it will unselect it
     else if (x === piecelocationstorerX && y === piecelocationstorerY){
       pieceSlected = false;
     }
@@ -144,3 +148,15 @@ function mousePressed() {
 }
 
 
+function legalMovechecker(piece, newX, newY, oldX, oldY){
+  if (piece === "wPawn"){
+    if ( (oldX === newX && oldY -1 === newY) || (grid[newY][newX] !== "0" && ((oldX - 1 === newX || oldX +1 === newX) && oldY -1 === newY))){
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
+
+}
