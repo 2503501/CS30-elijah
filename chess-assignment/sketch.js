@@ -16,6 +16,8 @@ let piecelocationstorerX;
 let piecelocationstorerY;
 let Whiteturn = true;
 
+let legalmoves = [];
+
 
 // define pieces 
 let bBishop_png, bKing_png, bPawn_png, bKnight_png, bQueen_png, bRook_png, wBishop_png, wKing_png, wKnight_png, wPawn_png, wQueen_png, wRook_png;
@@ -113,14 +115,17 @@ function mousePressed() {
         pieceStorer = grid[y][x];
         piecelocationstorerX = x;
         piecelocationstorerY = y;
-        console.log(pieceStorer);
+        console.log(piecelocationstorerX);
+        console.log(piecelocationstorerY);
         pieceSlected = true;
+        createLegalMoveList(pieceStorer, piecelocationstorerX, piecelocationstorerY);
       }
       else if (!Whiteturn &&  grid[y][x][0] === "b"){
         pieceStorer = grid[y][x];
         piecelocationstorerX = x;
         piecelocationstorerY = y;
-        console.log(pieceStorer);
+        console.log(piecelocationstorerX);
+        console.log(piecelocationstorerY);
         pieceSlected = true;
       }
     }
@@ -132,7 +137,7 @@ function mousePressed() {
     let x = Math.floor(mouseX/cellsize - (width/2 - cellsize *4 )/cellsize);
     let y = Math.floor(mouseY/cellsize - (height/2 - cellsize *4 )/cellsize);
     if(x >= 0 && x < ROWS && y >= 0 && y < ROWS && !(x === piecelocationstorerX && y === piecelocationstorerY)){
-      if(legalMovechecker(pieceStorer, piecelocationstorerX, piecelocationstorerY, x, y)  ){
+      if(legalMovechecker(pieceStorer, x, y, piecelocationstorerX, piecelocationstorerY)  ){
         grid[piecelocationstorerY][piecelocationstorerX] = "0";
         grid[y][x] = pieceStorer;
         pieceSlected = false;
@@ -149,14 +154,47 @@ function mousePressed() {
 
 
 function legalMovechecker(piece, newX, newY, oldX, oldY){
-  if (piece === "wPawn"){
-    if ( (oldX === newX && oldY -1 === newY) || (grid[newY][newX] !== "0" && ((oldX - 1 === newX || oldX +1 === newX) && oldY -1 === newY))){
+  console.log(newY);
+  console.log(newX);
+  for (let i = 0; i < legalmoves.length; i++){
+    if (newY === legalmoves[i][0] && newX === legalmoves[i][1]){
       return true;
     }
-    else {
-      return false;
+  }
+  return false;
+
+
+
+
+  // if (piece === "wPawn"){
+  //   if ( oldX === newX && oldY -1 === newY && grid[newY][newX] === "0"|| (newX - 1 === oldX || newX+1 === oldX) && oldY -1 === newY && grid[newY][newX] !== "0" ||  oldX === newX && oldY -2 === newY && grid[newY][newX] === "0" && oldY === 6){
+  //     return true;
+  //   }
+  //   else {
+  //     return false;
+  //   }
+  // }
+  // else {
+  //   return true;
+  // }
+
+
+}
+
+function createLegalMoveList(piece, oldX, oldY){
+  legalmoves = [];
+  if (piece === "wPawn"){
+    if (grid[oldY -1][oldX] === "0"){
+      legalmoves.push([oldY -1, oldX]);
+    }
+    if (grid[oldY -1][oldX+1] !== "0"){
+      legalmoves.push([oldY -1, oldX+1]);
+    }
+    if (grid[oldY -1][oldX-1] !== "0"){
+      legalmoves.push([oldY -1, oldX-1]);
+    }
+    if (grid[oldY - 2][oldX] === "0" && oldY === 6){
+      legalmoves.push([oldY - 2, oldX]);
     }
   }
-
-
 }
