@@ -229,7 +229,7 @@ function createLegalMoveList(piece, oldX, oldY){
 
   }
   if (piece[1] === "K"){
-    for (let x = 0; x < knightValues; x++){
+    for (let x = 0; x < knightValues.length; x++){
       for (let y = -1; y <2; y++){
         if (y !== 0){
           if (oldY + y >= 0 && oldY + y <= 7 && oldX + knightValues[x] >= 0 &&  oldX + knightValues[x] <=7){
