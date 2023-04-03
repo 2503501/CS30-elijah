@@ -17,10 +17,13 @@ let piecelocationstorerY;
 let Whiteturn = true;
 
 let legalmoves = [];
-
+let knightValues = [-2,2];
 
 // define pieces 
 let bBishop_png, bKing_png, bPawn_png, bKnight_png, bQueen_png, bRook_png, wBishop_png, wKing_png, wKnight_png, wPawn_png, wQueen_png, wRook_png;
+
+
+
 
 function preload(){
   bBishop_png = loadImage("blackbishop.png");
@@ -48,6 +51,7 @@ function draw() {
   background(200);
   drawGrid();
   showHighlight();
+  highlightMoves();
   drawBoard();
 }
 
@@ -105,6 +109,15 @@ function showHighlight(){
   }
 }
 
+function highlightMoves(){
+  if (legalmoves[0] !== undefined){
+    for (let i =0; i < legalmoves.length; i++){
+      fill("red");
+      rect(legalmoves[i][1] * cellsize + width/2 - cellsize *4, legalmoves[i][0] * cellsize + height/2 - cellsize *4, cellsize, cellsize);
+    }
+  }
+}
+
 
 function mousePressed() {
   if (!pieceSlected){
@@ -127,6 +140,7 @@ function mousePressed() {
         console.log(piecelocationstorerX);
         console.log(piecelocationstorerY);
         pieceSlected = true;
+        createLegalMoveList(pieceStorer, piecelocationstorerX, piecelocationstorerY);
       }
     }
     else{
@@ -141,19 +155,21 @@ function mousePressed() {
         grid[piecelocationstorerY][piecelocationstorerX] = "0";
         grid[y][x] = pieceStorer;
         pieceSlected = false;
+        legalmoves = [];
         Whiteturn = !Whiteturn;
       }
     }
     // if you click again on the piece you slected, it will unselect it
     else if (x === piecelocationstorerX && y === piecelocationstorerY){
       pieceSlected = false;
+      legalmoves = [];
     }
 
   }
 }
 
 
-function legalMovechecker(piece, newX, newY, oldX, oldY){
+function legalMovechecker(piece, newX, newY){
   console.log(newY);
   console.log(newX);
   for (let i = 0; i < legalmoves.length; i++){
@@ -187,14 +203,40 @@ function createLegalMoveList(piece, oldX, oldY){
     if (grid[oldY -1][oldX] === "0"){
       legalmoves.push([oldY -1, oldX]);
     }
-    if (grid[oldY -1][oldX+1] !== "0"){
+    if (grid[oldY -1][oldX+1] !== "0" && oldX + 1 !== 8 && grid[oldY + 1][oldX +1][0] !== "w"){
       legalmoves.push([oldY -1, oldX+1]);
     }
-    if (grid[oldY -1][oldX-1] !== "0"){
+    if (grid[oldY -1][oldX-1] !== "0" && oldX-1 !== -1 && grid[oldY + 1][oldX -1][0] !== "w"){
       legalmoves.push([oldY -1, oldX-1]);
     }
-    if (grid[oldY - 2][oldX] === "0" && oldY === 6){
+    if (grid[oldY - 2][oldX] === "0" && grid[oldY - 1][oldX] === "0" && oldY === 6){
       legalmoves.push([oldY - 2, oldX]);
+    }
+  }
+  if (piece === "bPawn"){
+    if (grid[oldY +1][oldX] === "0"){
+      legalmoves.push([oldY +1, oldX]);
+    }
+    if (grid[oldY + 1][oldX +1] !== "0" && oldX+ 1 !== 8 && grid[oldY + 1][oldX +1][0] !== "b"){
+      legalmoves.push([oldY +1,oldX + 1]);
+    }
+    if (grid[oldY + 1][oldX -1] !== "0" && oldX - 1 !==0 && grid[oldY + 1][oldX -1][0] !== "b"){
+      legalmoves.push([oldY +1,oldX - 1]);
+    }
+    if (grid[oldY + 2][oldX] === "0" && grid[oldY + 1][oldX] === "0" && oldY === 1){
+      legalmoves.push([oldY + 2, oldX]);
+    }
+
+  }
+  if (piece[1] === "K"){
+    for (let x = 0; x < knightValues; x++){
+      for (let y = -1; y <2; y++){
+        if (y !== 0){
+          if (oldY + y >= 0 && oldY + y <= 7 && oldX + knightValues[x] >= 0 &&  oldX + knightValues[x] <=7){
+            legalmoves.push([oldY + y, oldX + knightValues[x]]);
+          }
+        }
+      }
     }
   }
 }
