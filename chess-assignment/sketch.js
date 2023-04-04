@@ -76,8 +76,8 @@ function startingGrid(){
     ["bRook","bKnight","bBishop","bQueen", "bKing","bBishop", "bKnight", "bRook"],
     ["bPawn", "bPawn", "bPawn", "bPawn", "bPawn", "bPawn", "bPawn", "bPawn",],
     ["0", "0", "0", "0", "0", "0", "0", "0",],
-    ["0", "0", "0", "0", "0", "0", "0", "0",],
-    ["0", "0", "0", "0", "0", "0", "0", "0",],
+    ["0", "0", "0", "0", "wBishop", "0", "0", "0",],
+    ["wBishop", "0", "0", "0", "0", "0", "0", "0",],
     ["0", "0", "0", "0", "0", "0", "0", "0",],
     ["wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn",],
     ["wRook","wKnight","wBishop","wQueen", "wKing","wBishop", "wKnight", "wRook"],
@@ -170,8 +170,6 @@ function mousePressed() {
 
 
 function legalMovechecker(piece, newX, newY){
-  console.log(newY);
-  console.log(newX);
   for (let i = 0; i < legalmoves.length; i++){
     if (newY === legalmoves[i][0] && newX === legalmoves[i][1]){
       return true;
@@ -213,13 +211,13 @@ function createLegalMoveList(piece, oldX, oldY){
     }
 
   }
-  if (piece[1] === "K"){
+  if (piece[1] === "K" &&piece[2] === "n" ){
     for (let x = 0; x < knightValues.length; x++){
       for (let y = -1; y <2; y++){
         if (y !== 0){
           if (oldY + y >= 0 && oldY + y <= 7 && oldX + knightValues[x] >= 0 &&  oldX + knightValues[x] <=7){
             if (piece[0] === "w" && grid[oldY + y][oldX + knightValues[x]][0] !== "w" || piece[0] === "b" && grid[oldY + y][oldX + knightValues[x]][0] !== "b" ){
-             legalmoves.push([oldY + y, oldX + knightValues[x]]);
+              legalmoves.push([oldY + y, oldX + knightValues[x]]);
             }
           }
         }
@@ -237,8 +235,63 @@ function createLegalMoveList(piece, oldX, oldY){
       }
     }
   }
+  if (piece[1] === "B"){
+    for (let x = 0; x< 8 -oldX; x++){
+      if (oldY + x <8){
+        if (grid[oldY][oldX][0] === "w" && grid[oldY + x] [oldX + x][0] === "b" ||grid[oldY][oldX][0] === "b" && grid[oldY + x] [oldX + x][0] === "w"){
+          legalmoves.push([oldY + x , oldX + x]);
+          x = 999;
+        }
+        else if (x !== 0 && grid[oldY][oldX][0] === "w" && grid[oldY + x] [oldX + x][0] === "w" ||x !== 0 && grid[oldY][oldX][0] === "b" && grid[oldY + x] [oldX + x][0] === "b"){
+          x = 999;
+        }
+        else{
+          legalmoves.push([oldY + x , oldX + x]);
+        }
+      }
+    }
+    for (let x = 0; x< 8 -oldX; x++){
+      if (oldY - x >= 0){
+        console.log("hi");
+        if (grid[oldY][oldX][0] === "w" && grid[oldY - x] [oldX + x][0] === "b" ||grid[oldY][oldX][0] === "b" && grid[oldY - x] [oldX + x][0] === "w"){
+          legalmoves.push([oldY - x , oldX + x]);
+          x = 999;
+        }
+        else if (x !== 0 && grid[oldY][oldX][0] === "w" && grid[oldY - x] [oldX + x][0] === "w" ||x !== 0 && grid[oldY][oldX][0] === "b" && grid[oldY - x] [oldX + x][0] === "b"){
+          x = 999;
+        }
+        else{
+          legalmoves.push([oldY - x , oldX + x]);
+        }
+      }
+    }
+    for (let x = 0; x<= 8 - (8 -oldX); x++){
+      if (oldY + x <8){
+        if (grid[oldY][oldX][0] === "w" && grid[oldY + x] [oldX - x][0] === "b" ||grid[oldY][oldX][0] === "b" && grid[oldY + x] [oldX - x][0] === "w"){
+          legalmoves.push([oldY + x , oldX - x]);
+          x = 999;
+        }
+        else if (x !== 0 && grid[oldY][oldX][0] === "w" && grid[oldY + x] [oldX - x][0] === "w" ||x !== 0 && grid[oldY][oldX][0] === "b" && grid[oldY + x] [oldX - x][0] === "b"){
+          x = 999;
+        }
+        else{
+          legalmoves.push([oldY + x , oldX - x]);
+        }
+      }
+    }
+    for (let x = 0; x<= 8 - (8 -oldX); x++){
+      if (oldY - x >= 0){
+        if (grid[oldY][oldX][0] === "w" && grid[oldY - x] [oldX - x][0] === "b" ||grid[oldY][oldX][0] === "b" && grid[oldY - x] [oldX - x][0] === "w"){
+          legalmoves.push([oldY - x , oldX - x]);
+          x = 999;
+        }
+        else if (x !== 0 && grid[oldY][oldX][0] === "w" && grid[oldY - x] [oldX - x][0] === "w" ||x !== 0 && grid[oldY][oldX][0] === "b" && grid[oldY - x] [oldX - x][0] === "b"){
+          x = 999;
+        }
+        else{
+          legalmoves.push([oldY - x , oldX - x]);
+        }
+      }
+    }
+  }
 }
-
-
-
-
