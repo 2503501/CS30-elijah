@@ -203,10 +203,10 @@ function createLegalMoveList(piece, oldX, oldY){
     if (grid[oldY -1][oldX] === "0"){
       legalmoves.push([oldY -1, oldX]);
     }
-    if (grid[oldY -1][oldX+1] !== "0" && oldX + 1 !== 8 && grid[oldY + 1][oldX +1][0] !== "w"){
+    if (grid[oldY -1][oldX+1] !== "0" && oldX + 1 !== 8 && grid[oldY - 1][oldX +1][0] !== "w"){
       legalmoves.push([oldY -1, oldX+1]);
     }
-    if (grid[oldY -1][oldX-1] !== "0" && oldX-1 !== -1 && grid[oldY + 1][oldX -1][0] !== "w"){
+    if (grid[oldY -1][oldX-1] !== "0" && oldX-1 !== -1 && grid[oldY - 1][oldX -1][0] !== "w"){
       legalmoves.push([oldY -1, oldX-1]);
     }
     if (grid[oldY - 2][oldX] === "0" && grid[oldY - 1][oldX] === "0" && oldY === 6){
@@ -233,7 +233,20 @@ function createLegalMoveList(piece, oldX, oldY){
       for (let y = -1; y <2; y++){
         if (y !== 0){
           if (oldY + y >= 0 && oldY + y <= 7 && oldX + knightValues[x] >= 0 &&  oldX + knightValues[x] <=7){
-            legalmoves.push([oldY + y, oldX + knightValues[x]]);
+            if (piece[0] === "w" && grid[oldY + y][oldX + knightValues[x]][0] !== "w" || piece[0] === "b" && grid[oldY + y][oldX + knightValues[x]][0] !== "b" ){
+             legalmoves.push([oldY + y, oldX + knightValues[x]]);
+            }
+          }
+        }
+      }
+    }
+    for (let y = 0; y < knightValues.length; y++){
+      for (let x = -1; x <2; x++){
+        if (x !== 0){
+          if (oldY + knightValues[y] >= 0 && oldY + knightValues[y] <= 7 && oldX + x >= 0 &&  oldX + x <=7){
+            if (piece[0] === "w" && grid[oldY + knightValues[y]][oldX + x][0] !== "w" || piece[0] === "b" && grid[oldY + knightValues[y]][oldX + x][0] !== "b" ){
+              legalmoves.push([oldY + knightValues[y], oldX + x]);
+            }
           }
         }
       }
