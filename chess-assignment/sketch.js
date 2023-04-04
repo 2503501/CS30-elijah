@@ -180,21 +180,6 @@ function legalMovechecker(piece, newX, newY){
   return false;
 
 
-
-
-  // if (piece === "wPawn"){
-  //   if ( oldX === newX && oldY -1 === newY && grid[newY][newX] === "0"|| (newX - 1 === oldX || newX+1 === oldX) && oldY -1 === newY && grid[newY][newX] !== "0" ||  oldX === newX && oldY -2 === newY && grid[newY][newX] === "0" && oldY === 6){
-  //     return true;
-  //   }
-  //   else {
-  //     return false;
-  //   }
-  // }
-  // else {
-  //   return true;
-  // }
-
-
 }
 
 function createLegalMoveList(piece, oldX, oldY){
@@ -253,3 +238,7 @@ function createLegalMoveList(piece, oldX, oldY){
     }
   }
 }
+
+
+
+
