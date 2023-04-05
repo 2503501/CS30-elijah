@@ -19,6 +19,14 @@ let Whiteturn = true;
 let legalmoves = [];
 let knightValues = [-2,2];
 
+let WhiteKingMoved = false;
+let WhiteLongMoved = false;
+let WhiteShortMoved = false;
+let BlackKingMoved = false;
+let BlackLongMoved = false;
+let BlackShortMoved = false;
+let CastleStatus;
+
 // define pieces 
 let bBishop_png, bKing_png, bPawn_png, bKnight_png, bQueen_png, bRook_png, wBishop_png, wKing_png, wKnight_png, wPawn_png, wQueen_png, wRook_png;
 
@@ -53,6 +61,7 @@ function draw() {
   showHighlight();
   highlightMoves();
   drawBoard();
+  checkCastleMove();
 }
 
 
@@ -76,13 +85,34 @@ function startingGrid(){
     ["bRook","bKnight","bBishop","bQueen", "bKing","bBishop", "bKnight", "bRook"],
     ["bPawn", "bPawn", "bPawn", "bPawn", "bPawn", "bPawn", "bPawn", "bPawn",],
     ["0", "0", "0", "0", "0", "0", "0", "0",],
-    ["0", "0", "0", "0", "wQueen", "0", "0", "0",],
-    ["wBishop", "0", "0", "0", "0", "0", "0", "0",],
+    ["0", "0", "0", "0", "0", "0", "0", "0",],
+    ["0", "0", "0", "0", "0", "0", "0", "0",],
     ["0", "0", "0", "0", "0", "0", "0", "0",],
     ["wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn",],
     ["wRook","wKnight","wBishop","wQueen", "wKing","wBishop", "wKnight", "wRook"],
   ];
   return tempGrid;
+}
+
+function checkCastleMove(){
+  if (grid[7][0] !== "wRook"){
+    WhiteLongMoved = true;
+  }
+  if (grid[7][7] !== "wRook"){
+    WhiteShortMoved = true;
+  }
+  if (grid[7][4] !== "wKing"){
+    WhiteKingMoved = true;
+  }
+  if (grid[0][0] !== "bRook"){
+    BlackLongMoved = true;
+  }
+  if (grid[0][7] !== "bRook"){
+    BlackShortMoved = true;
+  }
+  if (grid[0][4] !== "bKing"){
+    BlackKingMoved = true;
+  }
 }
 
 function drawBoard(){
@@ -154,6 +184,7 @@ function mousePressed() {
       if(legalMovechecker(pieceStorer, x, y, piecelocationstorerX, piecelocationstorerY)  ){
         grid[piecelocationstorerY][piecelocationstorerX] = "0";
         grid[y][x] = pieceStorer;
+        displayCastle();
         pieceSlected = false;
         legalmoves = [];
         Whiteturn = !Whiteturn;
@@ -297,7 +328,7 @@ function createLegalMoveList(piece, oldX, oldY){
   if (piece[1] === "R" || piece[1] === "Q"){
     for (let x = 0; x< 8 -oldX; x++){
       if (grid[oldY][oldX][0] === "w" && grid[oldY] [oldX + x][0] === "b" ||grid[oldY][oldX][0] === "b" && grid[oldY] [oldX + x][0] === "w"){
-        legalmoves.push([oldY, oldX + x])
+        legalmoves.push([oldY, oldX + x]);
         x = 999;
       }
       else if (x !== 0 && grid[oldY][oldX][0] === "w" && grid[oldY] [oldX + x][0] === "w" ||x !== 0 && grid[oldY][oldX][0] === "b" && grid[oldY] [oldX + x][0] === "b"){
@@ -343,5 +374,34 @@ function createLegalMoveList(piece, oldX, oldY){
         legalmoves.push([oldY + y , oldX]);
       }
     }
+  }
+  if (piece[1] === "K" && piece[2] === "i"){
+    for (let y = -1; y<2; y++){
+      for (let x= -1; x<2; x++){
+        if (oldX + x >= 0 && oldX + x < 8 && oldY + y >=0 && oldY + y < 8){
+          if (piece[0] === "w" && grid[oldY + y][oldX + x][0] === "b" || piece[0] === "b" && grid[oldY + y][oldX + x][0] === "w"||  grid[oldY + y][oldX + x] === "0"){
+            legalmoves.push([oldY +y, oldX + x]);
+          }
+        }
+      }
+    }
+  }
+  if (piece[1] === "K" && piece[2] === "i"){
+    pushCastle();
+  }
+}
+
+function pushCastle(){
+  if (!WhiteKingMoved && !WhiteShortMoved && grid[7][5] === "0" && grid[7][6] === "0"){
+    legalmoves.push([7, 6]);
+    CastleStatus = "wShort";
+  }
+}
+
+function displayCastle(){
+  if (CastleStatus === "wShort"){
+    grid[7][7] = "0";
+    grid[7][5] = "wRook";
+    CastleStatus = "none";
   }
 }
