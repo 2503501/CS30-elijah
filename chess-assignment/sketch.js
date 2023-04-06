@@ -387,14 +387,30 @@ function createLegalMoveList(piece, oldX, oldY){
     }
   }
   if (piece[1] === "K" && piece[2] === "i"){
-    pushCastle();
+    pushCastle(piece[0]);
   }
 }
 
-function pushCastle(){
-  if (!WhiteKingMoved && !WhiteShortMoved && grid[7][5] === "0" && grid[7][6] === "0"){
-    legalmoves.push([7, 6]);
-    CastleStatus = "wShort";
+function pushCastle(color){
+  if (color === "w"){
+    if (!WhiteKingMoved && !WhiteShortMoved && grid[7][5] === "0" && grid[7][6] === "0"){
+      legalmoves.push([7, 6]);
+      CastleStatus = "wShort";
+    }
+    if (!WhiteKingMoved && !WhiteLongMoved && grid[7][1] === "0" && grid[7][2] === "0" && grid[7][3] === "0"){
+      legalmoves.push([7, 2])
+      CastleStatus = "wLong";
+    }
+  }
+  else{
+    if (!BlackKingMoved && !BlackShortMoved && grid[0][5] === "0" && grid[0][6] === "0"){
+      legalmoves.push([0, 6])
+      CastleStatus = "bShort";
+    }
+    if (!BlackKingMoved && !BlackLongMoved && grid[0][1] === "0" && grid[0][2] === "0" && grid[0][3] === "0"){
+      legalmoves.push([0, 2])
+      CastleStatus = "bLong";
+    }
   }
 }
 
@@ -402,6 +418,21 @@ function displayCastle(){
   if (CastleStatus === "wShort"){
     grid[7][7] = "0";
     grid[7][5] = "wRook";
+    CastleStatus = "none";
+  }
+  if (CastleStatus === "wLong"){
+    grid[7][0] = "0";
+    grid[7][3] = "wRook";
+    CastleStatus = "none";
+  }
+  if (CastleStatus === "bShort"){
+    grid[0][7] = "0";
+    grid[0][5] = "bRook";
+    CastleStatus = "none";
+  }
+  if (CastleStatus === "bLong"){
+    grid[0][0] = "0";
+    grid[0][3] = "bRook";
     CastleStatus = "none";
   }
 }
