@@ -26,6 +26,8 @@ let BlackKingMoved = false;
 let BlackLongMoved = false;
 let BlackShortMoved = false;
 let CastleStatus;
+let wKingY = 7;
+let wkingX = 4;
 
 // define pieces 
 let bBishop_png, bKing_png, bPawn_png, bKnight_png, bQueen_png, bRook_png, wBishop_png, wKing_png, wKnight_png, wPawn_png, wQueen_png, wRook_png;
@@ -162,6 +164,7 @@ function mousePressed() {
         console.log(piecelocationstorerY);
         pieceSlected = true;
         createLegalMoveList(pieceStorer, piecelocationstorerX, piecelocationstorerY);
+        updateLegalmoveswithchecks(pieceStorer);
       }
       else if (!Whiteturn &&  grid[y][x][0] === "b"){
         pieceStorer = grid[y][x];
@@ -184,6 +187,10 @@ function mousePressed() {
       if(legalMovechecker(pieceStorer, x, y, piecelocationstorerX, piecelocationstorerY)  ){
         grid[piecelocationstorerY][piecelocationstorerX] = "0";
         grid[y][x] = pieceStorer;
+        if (pieceStorer === "wKing"){
+          wKingY = y;
+          wkingX = x;
+        }
         displayCastle();
         pieceSlected = false;
         legalmoves = [];
@@ -199,6 +206,24 @@ function mousePressed() {
   }
 }
 
+function updateLegalmoveswithchecks(piece){
+  for (let a = 0; a < legalmoves.length; a++){
+    let tempgrid = [];
+    for (let y = 0; y<ROWS; y++){
+      tempgrid.push([...grid[y]]);
+    }
+    for (let y = 0; y < ROWS; y++){
+      for (let x = 0; x < ROWS; x++){
+        console.log(tempgrid);
+      }
+    }
+  }
+}
+
+//make a new grid
+//interate new grid for every legal move
+// for that specfic legal move, if no black pieces hit the kings x and y, push that move to a new grid
+// after all moves, make legal moves equal to the list of pushed moves that evade check
 
 function legalMovechecker(piece, newX, newY){
   for (let i = 0; i < legalmoves.length; i++){
@@ -398,17 +423,17 @@ function pushCastle(color){
       CastleStatus = "wShort";
     }
     if (!WhiteKingMoved && !WhiteLongMoved && grid[7][1] === "0" && grid[7][2] === "0" && grid[7][3] === "0"){
-      legalmoves.push([7, 2])
+      legalmoves.push([7, 2]);
       CastleStatus = "wLong";
     }
   }
   else{
     if (!BlackKingMoved && !BlackShortMoved && grid[0][5] === "0" && grid[0][6] === "0"){
-      legalmoves.push([0, 6])
+      legalmoves.push([0, 6]);
       CastleStatus = "bShort";
     }
     if (!BlackKingMoved && !BlackLongMoved && grid[0][1] === "0" && grid[0][2] === "0" && grid[0][3] === "0"){
-      legalmoves.push([0, 2])
+      legalmoves.push([0, 2]);
       CastleStatus = "bLong";
     }
   }
