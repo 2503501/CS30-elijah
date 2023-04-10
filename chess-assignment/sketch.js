@@ -16,7 +16,9 @@ let piecelocationstorerX;
 let piecelocationstorerY;
 let Whiteturn = true;
 
+let returnlist = [];
 let legalmoves = [];
+let legalmovecheckerlist = [];
 let knightValues = [-2,2];
 
 let WhiteKingMoved = false;
@@ -27,7 +29,9 @@ let BlackLongMoved = false;
 let BlackShortMoved = false;
 let CastleStatus;
 let wKingY = 7;
-let wkingX = 4;
+let wKingX = 4;
+let bKingY = 0;
+let bKingX = 4;
 
 // define pieces 
 let bBishop_png, bKing_png, bPawn_png, bKnight_png, bQueen_png, bRook_png, wBishop_png, wKing_png, wKnight_png, wPawn_png, wQueen_png, wRook_png;
@@ -160,20 +164,16 @@ function mousePressed() {
         pieceStorer = grid[y][x];
         piecelocationstorerX = x;
         piecelocationstorerY = y;
-        console.log(piecelocationstorerX);
-        console.log(piecelocationstorerY);
         pieceSlected = true;
-        createLegalMoveList(pieceStorer, piecelocationstorerX, piecelocationstorerY);
-        updateLegalmoveswithchecks(pieceStorer);
+        legalmoves = createLegalMoveList(pieceStorer, piecelocationstorerX, piecelocationstorerY, grid);
+        updateLegalmoveswithchecks();
       }
       else if (!Whiteturn &&  grid[y][x][0] === "b"){
         pieceStorer = grid[y][x];
         piecelocationstorerX = x;
         piecelocationstorerY = y;
-        console.log(piecelocationstorerX);
-        console.log(piecelocationstorerY);
         pieceSlected = true;
-        createLegalMoveList(pieceStorer, piecelocationstorerX, piecelocationstorerY);
+        legalmoves = createLegalMoveList(pieceStorer, piecelocationstorerX, piecelocationstorerY, grid);
       }
     }
     else{
@@ -189,7 +189,11 @@ function mousePressed() {
         grid[y][x] = pieceStorer;
         if (pieceStorer === "wKing"){
           wKingY = y;
-          wkingX = x;
+          wKingX = x;
+        }
+        if (pieceStorer === "bKing"){
+          bKingY = y;
+          bkingX = x;
         }
         displayCastle();
         pieceSlected = false;
@@ -206,15 +210,28 @@ function mousePressed() {
   }
 }
 
-function updateLegalmoveswithchecks(piece){
-  for (let a = 0; a < legalmoves.length; a++){
-    let tempgrid = [];
+function updateLegalmoveswithchecks(){
+  let tempgrid = [];
+  for (let a = 0 ; a < legalmoves.length; a++){
+    tempgrid = [];
     for (let y = 0; y<ROWS; y++){
       tempgrid.push([...grid[y]]);
     }
+    tempgrid[piecelocationstorerY][piecelocationstorerX] = "0";
+    tempgrid[legalmoves[a][0]][legalmoves[a][1]] = pieceStorer;
+    console.log(tempgrid);
     for (let y = 0; y < ROWS; y++){
       for (let x = 0; x < ROWS; x++){
-        console.log(tempgrid);
+        if (pieceStorer[0] === "w" && tempgrid[y][x][0] === "b" ){
+          legalmovecheckerlist = createLegalMoveList(tempgrid[y][x], x, y, tempgrid);
+          for (let i = 0; i < legalmovecheckerlist.length; i++){
+            if (legalmovecheckerlist[i][0] === wKingY && legalmovecheckerlist[i][1] === wKingX ){
+              console.log("illegal");
+              legalmoves.splice(a, 1);
+              a--;
+            }
+          }
+        }
       }
     }
   }
@@ -236,34 +253,34 @@ function legalMovechecker(piece, newX, newY){
 
 }
 
-function createLegalMoveList(piece, oldX, oldY){
-  legalmoves = [];
+function createLegalMoveList(piece, oldX, oldY, layout){
+  returnlist = [];
   if (piece === "wPawn"){
-    if (grid[oldY -1][oldX] === "0"){
-      legalmoves.push([oldY -1, oldX]);
+    if (layout[oldY -1][oldX] === "0"){
+      returnlist.push([oldY -1, oldX]);
     }
-    if (grid[oldY -1][oldX+1] !== "0" && oldX + 1 !== 8 && grid[oldY - 1][oldX +1][0] !== "w"){
-      legalmoves.push([oldY -1, oldX+1]);
+    if (layout[oldY -1][oldX+1] !== "0" && oldX + 1 !== 8 && layout[oldY - 1][oldX +1][0] !== "w"){
+      returnlist.push([oldY -1, oldX+1]);
     }
-    if (grid[oldY -1][oldX-1] !== "0" && oldX-1 !== -1 && grid[oldY - 1][oldX -1][0] !== "w"){
-      legalmoves.push([oldY -1, oldX-1]);
+    if (layout[oldY -1][oldX-1] !== "0" && oldX-1 !== -1 && layout[oldY - 1][oldX -1][0] !== "w"){
+      returnlist.push([oldY -1, oldX-1]);
     }
-    if (grid[oldY - 2][oldX] === "0" && grid[oldY - 1][oldX] === "0" && oldY === 6){
-      legalmoves.push([oldY - 2, oldX]);
+    if (layout[oldY - 2][oldX] === "0" && layout[oldY - 1][oldX] === "0" && oldY === 6){
+      returnlist.push([oldY - 2, oldX]);
     }
   }
   if (piece === "bPawn"){
-    if (grid[oldY +1][oldX] === "0"){
-      legalmoves.push([oldY +1, oldX]);
+    if (layout[oldY +1][oldX] === "0"){
+      returnlist.push([oldY +1, oldX]);
     }
-    if (grid[oldY + 1][oldX +1] !== "0" && oldX+ 1 !== 8 && grid[oldY + 1][oldX +1][0] !== "b"){
-      legalmoves.push([oldY +1,oldX + 1]);
+    if (layout[oldY + 1][oldX +1] !== "0" && oldX+ 1 !== 8 && layout[oldY + 1][oldX +1][0] !== "b"){
+      returnlist.push([oldY +1,oldX + 1]);
     }
-    if (grid[oldY + 1][oldX -1] !== "0" && oldX - 1 !==0 && grid[oldY + 1][oldX -1][0] !== "b"){
-      legalmoves.push([oldY +1,oldX - 1]);
+    if (layout[oldY + 1][oldX -1] !== "0" && oldX - 1 >= 0 && layout[oldY + 1][oldX -1][0] !== "b"){
+      returnlist.push([oldY +1,oldX - 1]);
     }
-    if (grid[oldY + 2][oldX] === "0" && grid[oldY + 1][oldX] === "0" && oldY === 1){
-      legalmoves.push([oldY + 2, oldX]);
+    if (layout[oldY + 2][oldX] === "0" && layout[oldY + 1][oldX] === "0" && oldY === 1){
+      returnlist.push([oldY + 2, oldX]);
     }
 
   }
@@ -272,8 +289,8 @@ function createLegalMoveList(piece, oldX, oldY){
       for (let y = -1; y <2; y++){
         if (y !== 0){
           if (oldY + y >= 0 && oldY + y <= 7 && oldX + knightValues[x] >= 0 &&  oldX + knightValues[x] <=7){
-            if (piece[0] === "w" && grid[oldY + y][oldX + knightValues[x]][0] !== "w" || piece[0] === "b" && grid[oldY + y][oldX + knightValues[x]][0] !== "b" ){
-              legalmoves.push([oldY + y, oldX + knightValues[x]]);
+            if (piece[0] === "w" && layout[oldY + y][oldX + knightValues[x]][0] !== "w" || piece[0] === "b" && layout[oldY + y][oldX + knightValues[x]][0] !== "b" ){
+              returnlist.push([oldY + y, oldX + knightValues[x]]);
             }
           }
         }
@@ -283,8 +300,8 @@ function createLegalMoveList(piece, oldX, oldY){
       for (let x = -1; x <2; x++){
         if (x !== 0){
           if (oldY + knightValues[y] >= 0 && oldY + knightValues[y] <= 7 && oldX + x >= 0 &&  oldX + x <=7){
-            if (piece[0] === "w" && grid[oldY + knightValues[y]][oldX + x][0] !== "w" || piece[0] === "b" && grid[oldY + knightValues[y]][oldX + x][0] !== "b" ){
-              legalmoves.push([oldY + knightValues[y], oldX + x]);
+            if (piece[0] === "w" && layout[oldY + knightValues[y]][oldX + x][0] !== "w" || piece[0] === "b" && layout[oldY + knightValues[y]][oldX + x][0] !== "b" ){
+              returnlist.push([oldY + knightValues[y], oldX + x]);
             }
           }
         }
@@ -294,109 +311,108 @@ function createLegalMoveList(piece, oldX, oldY){
   if (piece[1] === "B" || piece[1] === "Q"){
     for (let x = 0; x< 8 -oldX; x++){
       if (oldY + x <8){
-        if (grid[oldY][oldX][0] === "w" && grid[oldY + x] [oldX + x][0] === "b" ||grid[oldY][oldX][0] === "b" && grid[oldY + x] [oldX + x][0] === "w"){
-          legalmoves.push([oldY + x , oldX + x]);
+        if (layout[oldY][oldX][0] === "w" && layout[oldY + x] [oldX + x][0] === "b" ||layout[oldY][oldX][0] === "b" && layout[oldY + x] [oldX + x][0] === "w"){
+          returnlist.push([oldY + x , oldX + x]);
           x = 999;
         }
-        else if (x !== 0 && grid[oldY][oldX][0] === "w" && grid[oldY + x] [oldX + x][0] === "w" ||x !== 0 && grid[oldY][oldX][0] === "b" && grid[oldY + x] [oldX + x][0] === "b"){
+        else if (x !== 0 && layout[oldY][oldX][0] === "w" && layout[oldY + x] [oldX + x][0] === "w" ||x !== 0 && layout[oldY][oldX][0] === "b" && layout[oldY + x] [oldX + x][0] === "b"){
           x = 999;
         }
         else{
-          legalmoves.push([oldY + x , oldX + x]);
+          returnlist.push([oldY + x , oldX + x]);
         }
       }
     }
     for (let x = 0; x< 8 -oldX; x++){
       if (oldY - x >= 0){
-        console.log("hi");
-        if (grid[oldY][oldX][0] === "w" && grid[oldY - x] [oldX + x][0] === "b" ||grid[oldY][oldX][0] === "b" && grid[oldY - x] [oldX + x][0] === "w"){
-          legalmoves.push([oldY - x , oldX + x]);
+        if (layout[oldY][oldX][0] === "w" && layout[oldY - x] [oldX + x][0] === "b" ||layout[oldY][oldX][0] === "b" && layout[oldY - x] [oldX + x][0] === "w"){
+          returnlist.push([oldY - x , oldX + x]);
           x = 999;
         }
-        else if (x !== 0 && grid[oldY][oldX][0] === "w" && grid[oldY - x] [oldX + x][0] === "w" ||x !== 0 && grid[oldY][oldX][0] === "b" && grid[oldY - x] [oldX + x][0] === "b"){
+        else if (x !== 0 && layout[oldY][oldX][0] === "w" && layout[oldY - x] [oldX + x][0] === "w" ||x !== 0 && layout[oldY][oldX][0] === "b" && layout[oldY - x] [oldX + x][0] === "b"){
           x = 999;
         }
         else{
-          legalmoves.push([oldY - x , oldX + x]);
+          returnlist.push([oldY - x , oldX + x]);
         }
       }
     }
     for (let x = 0; x<= 8 - (8 -oldX); x++){
       if (oldY + x <8){
-        if (grid[oldY][oldX][0] === "w" && grid[oldY + x] [oldX - x][0] === "b" ||grid[oldY][oldX][0] === "b" && grid[oldY + x] [oldX - x][0] === "w"){
-          legalmoves.push([oldY + x , oldX - x]);
+        if (layout[oldY][oldX][0] === "w" && layout[oldY + x] [oldX - x][0] === "b" ||layout[oldY][oldX][0] === "b" && layout[oldY + x] [oldX - x][0] === "w"){
+          returnlist.push([oldY + x , oldX - x]);
           x = 999;
         }
-        else if (x !== 0 && grid[oldY][oldX][0] === "w" && grid[oldY + x] [oldX - x][0] === "w" ||x !== 0 && grid[oldY][oldX][0] === "b" && grid[oldY + x] [oldX - x][0] === "b"){
+        else if (x !== 0 && layout[oldY][oldX][0] === "w" && layout[oldY + x] [oldX - x][0] === "w" ||x !== 0 && layout[oldY][oldX][0] === "b" && layout[oldY + x] [oldX - x][0] === "b"){
           x = 999;
         }
         else{
-          legalmoves.push([oldY + x , oldX - x]);
+          returnlist.push([oldY + x , oldX - x]);
         }
       }
     }
     for (let x = 0; x<= 8 - (8 -oldX); x++){
       if (oldY - x >= 0){
-        if (grid[oldY][oldX][0] === "w" && grid[oldY - x] [oldX - x][0] === "b" ||grid[oldY][oldX][0] === "b" && grid[oldY - x] [oldX - x][0] === "w"){
-          legalmoves.push([oldY - x , oldX - x]);
+        if (layout[oldY][oldX][0] === "w" && layout[oldY - x] [oldX - x][0] === "b" ||layout[oldY][oldX][0] === "b" && layout[oldY - x] [oldX - x][0] === "w"){
+          returnlist.push([oldY - x , oldX - x]);
           x = 999;
         }
-        else if (x !== 0 && grid[oldY][oldX][0] === "w" && grid[oldY - x] [oldX - x][0] === "w" ||x !== 0 && grid[oldY][oldX][0] === "b" && grid[oldY - x] [oldX - x][0] === "b"){
+        else if (x !== 0 && layout[oldY][oldX][0] === "w" && layout[oldY - x] [oldX - x][0] === "w" ||x !== 0 && layout[oldY][oldX][0] === "b" && layout[oldY - x] [oldX - x][0] === "b"){
           x = 999;
         }
         else{
-          legalmoves.push([oldY - x , oldX - x]);
+          returnlist.push([oldY - x , oldX - x]);
         }
       }
     }
   }
   if (piece[1] === "R" || piece[1] === "Q"){
     for (let x = 0; x< 8 -oldX; x++){
-      if (grid[oldY][oldX][0] === "w" && grid[oldY] [oldX + x][0] === "b" ||grid[oldY][oldX][0] === "b" && grid[oldY] [oldX + x][0] === "w"){
-        legalmoves.push([oldY, oldX + x]);
+      if (layout[oldY][oldX][0] === "w" && layout[oldY] [oldX + x][0] === "b" ||layout[oldY][oldX][0] === "b" && layout[oldY] [oldX + x][0] === "w"){
+        returnlist.push([oldY, oldX + x]);
         x = 999;
       }
-      else if (x !== 0 && grid[oldY][oldX][0] === "w" && grid[oldY] [oldX + x][0] === "w" ||x !== 0 && grid[oldY][oldX][0] === "b" && grid[oldY] [oldX + x][0] === "b"){
+      else if (x !== 0 && layout[oldY][oldX][0] === "w" && layout[oldY] [oldX + x][0] === "w" ||x !== 0 && layout[oldY][oldX][0] === "b" && layout[oldY] [oldX + x][0] === "b"){
         x = 999;
       }
       else{
-        legalmoves.push([oldY , oldX + x]);
+        returnlist.push([oldY , oldX + x]);
       }
     }
     for (let y = 0; y<= 8 -(8 - oldY); y++){
-      if (grid[oldY][oldX][0] === "w" && grid[oldY - y] [oldX ][0] === "b" ||grid[oldY][oldX][0] === "b" && grid[oldY - y] [oldX][0] === "w"){
-        legalmoves.push([oldY - y , oldX]);
+      if (layout[oldY][oldX][0] === "w" && layout[oldY - y] [oldX ][0] === "b" ||layout[oldY][oldX][0] === "b" && layout[oldY - y] [oldX][0] === "w"){
+        returnlist.push([oldY - y , oldX]);
         y = 999;
       }
-      else if (y !== 0 && grid[oldY][oldX][0] === "w" && grid[oldY - y] [oldX][0] === "w" ||y !== 0 && grid[oldY][oldX][0] === "b" && grid[oldY - y] [oldX][0] === "b"){
+      else if (y !== 0 && layout[oldY][oldX][0] === "w" && layout[oldY - y] [oldX][0] === "w" ||y !== 0 && layout[oldY][oldX][0] === "b" && layout[oldY - y] [oldX][0] === "b"){
         y = 999;
       }
       else{
-        legalmoves.push([oldY - y , oldX]);
+        returnlist.push([oldY - y , oldX]);
       }
     }
     for (let x = 0; x<= 8 - (8 -oldX); x++){
-      if (grid[oldY][oldX][0] === "w" && grid[oldY] [oldX - x][0] === "b" ||grid[oldY][oldX][0] === "b" && grid[oldY] [oldX - x][0] === "w"){
-        legalmoves.push([oldY, oldX - x]);
+      if (layout[oldY][oldX][0] === "w" && layout[oldY] [oldX - x][0] === "b" ||layout[oldY][oldX][0] === "b" && layout[oldY] [oldX - x][0] === "w"){
+        returnlist.push([oldY, oldX - x]);
         x = 999;
       }
-      else if (x !== 0 && grid[oldY][oldX][0] === "w" && grid[oldY] [oldX - x][0] === "w" ||x !== 0 && grid[oldY][oldX][0] === "b" && grid[oldY][oldX - x][0] === "b"){
+      else if (x !== 0 && layout[oldY][oldX][0] === "w" && layout[oldY] [oldX - x][0] === "w" ||x !== 0 && layout[oldY][oldX][0] === "b" && layout[oldY][oldX - x][0] === "b"){
         x = 999;
       }
       else{
-        legalmoves.push([oldY, oldX - x]);
+        returnlist.push([oldY, oldX - x]);
       }
     }
-    for (let y = 0; y<= 8 -oldY; y++){
-      if (grid[oldY][oldX][0] === "w" && grid[oldY + y] [oldX ][0] === "b" ||grid[oldY][oldX][0] === "b" && grid[oldY + y] [oldX][0] === "w"){
-        legalmoves.push([oldY + y , oldX]);
+    for (let y = 0; y< 8 -oldY; y++){
+      if (layout[oldY][oldX][0] === "w" && layout[oldY + y][oldX ][0] === "b" ||layout[oldY][oldX][0] === "b" && layout[oldY + y][oldX][0] === "w"){
+        returnlist.push([oldY + y , oldX]);
         y = 999;
       }
-      else if (y !== 0 && grid[oldY][oldX][0] === "w" && grid[oldY + y] [oldX][0] === "w" ||y !== 0 && grid[oldY][oldX][0] === "b" && grid[oldY + y] [oldX][0] === "b"){
+      else if (y !== 0 && layout[oldY][oldX][0] === "w" && layout[oldY + y] [oldX][0] === "w" ||y !== 0 && layout[oldY][oldX][0] === "b" && layout[oldY + y] [oldX][0] === "b"){
         y = 999;
       }
       else{
-        legalmoves.push([oldY + y , oldX]);
+        returnlist.push([oldY + y , oldX]);
       }
     }
   }
@@ -404,8 +420,8 @@ function createLegalMoveList(piece, oldX, oldY){
     for (let y = -1; y<2; y++){
       for (let x= -1; x<2; x++){
         if (oldX + x >= 0 && oldX + x < 8 && oldY + y >=0 && oldY + y < 8){
-          if (piece[0] === "w" && grid[oldY + y][oldX + x][0] === "b" || piece[0] === "b" && grid[oldY + y][oldX + x][0] === "w"||  grid[oldY + y][oldX + x] === "0"){
-            legalmoves.push([oldY +y, oldX + x]);
+          if (piece[0] === "w" && layout[oldY + y][oldX + x][0] === "b" || piece[0] === "b" && layout[oldY + y][oldX + x][0] === "w"||  layout[oldY + y][oldX + x] === "0"){
+            returnlist.push([oldY +y, oldX + x]);
           }
         }
       }
@@ -414,26 +430,27 @@ function createLegalMoveList(piece, oldX, oldY){
   if (piece[1] === "K" && piece[2] === "i"){
     pushCastle(piece[0]);
   }
+  return returnlist;
 }
 
 function pushCastle(color){
   if (color === "w"){
     if (!WhiteKingMoved && !WhiteShortMoved && grid[7][5] === "0" && grid[7][6] === "0"){
-      legalmoves.push([7, 6]);
+      returnlist.push([7, 6]);
       CastleStatus = "wShort";
     }
     if (!WhiteKingMoved && !WhiteLongMoved && grid[7][1] === "0" && grid[7][2] === "0" && grid[7][3] === "0"){
-      legalmoves.push([7, 2]);
+      returnlist.push([7, 2]);
       CastleStatus = "wLong";
     }
   }
   else{
     if (!BlackKingMoved && !BlackShortMoved && grid[0][5] === "0" && grid[0][6] === "0"){
-      legalmoves.push([0, 6]);
+      returnlist.push([0, 6]);
       CastleStatus = "bShort";
     }
     if (!BlackKingMoved && !BlackLongMoved && grid[0][1] === "0" && grid[0][2] === "0" && grid[0][3] === "0"){
-      legalmoves.push([0, 2]);
+      returnlist.push([0, 2]);
       CastleStatus = "bLong";
     }
   }
