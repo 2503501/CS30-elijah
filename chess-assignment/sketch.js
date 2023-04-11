@@ -20,6 +20,7 @@ let returnlist = [];
 let legalmoves = [];
 let legalmovecheckerlist = [];
 let knightValues = [-2,2];
+let firstlegalmovecheck = false;
 
 let WhiteKingMoved = false;
 let WhiteLongMoved = false;
@@ -165,7 +166,9 @@ function mousePressed() {
         piecelocationstorerX = x;
         piecelocationstorerY = y;
         pieceSlected = true;
+        firstlegalmovecheck = true;
         legalmoves = createLegalMoveList(pieceStorer, piecelocationstorerX, piecelocationstorerY, grid);
+        firstlegalmovecheck = false;
         updateLegalmoveswithchecks();
       }
       else if (!Whiteturn &&  grid[y][x][0] === "b"){
@@ -173,7 +176,10 @@ function mousePressed() {
         piecelocationstorerX = x;
         piecelocationstorerY = y;
         pieceSlected = true;
+        firstlegalmovecheck = true;
         legalmoves = createLegalMoveList(pieceStorer, piecelocationstorerX, piecelocationstorerY, grid);
+        firstlegalmovecheck = false;
+        updateLegalmoveswithchecks();
       }
     }
     else{
@@ -222,10 +228,42 @@ function updateLegalmoveswithchecks(){
     console.log(tempgrid);
     for (let y = 0; y < ROWS; y++){
       for (let x = 0; x < ROWS; x++){
-        if (pieceStorer[0] === "w" && tempgrid[y][x][0] === "b" ){
+        if (pieceStorer[1] === "K" && pieceStorer[2] === "i" && pieceStorer[0] === "w" && tempgrid[y][x][0] === "b"){
+          legalmovecheckerlist = createLegalMoveList(tempgrid[y][x], x, y, tempgrid);
+          for (let i = 0; i < legalmovecheckerlist.length; i++){
+            if (legalmoves[a][0] === legalmovecheckerlist[i][0] && legalmoves[a][1] === legalmovecheckerlist[i][1] ){
+              console.log("illegal");
+              legalmoves.splice(a, 1);
+              a--;
+              i = 100000;
+            }
+          }
+        }
+        else if (pieceStorer[1] === "K" && pieceStorer[2] === "i" && pieceStorer[0] === "b" && tempgrid[y][x][0] === "w"){
+          legalmovecheckerlist = createLegalMoveList(tempgrid[y][x], x, y, tempgrid);
+          for (let i = 0; i < legalmovecheckerlist.length; i++){
+            if (legalmoves[a][0] === legalmovecheckerlist[i][0] && legalmoves[a][1] === legalmovecheckerlist[i][1] ){
+              console.log("illegal");
+              legalmoves.splice(a, 1);
+              a--;
+              i = 100000;
+            }
+          }
+        }
+        else if (pieceStorer[0] === "w" && tempgrid[y][x][0] === "b"){
           legalmovecheckerlist = createLegalMoveList(tempgrid[y][x], x, y, tempgrid);
           for (let i = 0; i < legalmovecheckerlist.length; i++){
             if (legalmovecheckerlist[i][0] === wKingY && legalmovecheckerlist[i][1] === wKingX ){
+              console.log("illegal");
+              legalmoves.splice(a, 1);
+              a--;
+            }
+          }
+        }
+        else if (pieceStorer[0] === "b" && tempgrid[y][x][0] === "w"){
+          legalmovecheckerlist = createLegalMoveList(tempgrid[y][x], x, y, tempgrid);
+          for (let i = 0; i < legalmovecheckerlist.length; i++){
+            if (legalmovecheckerlist[i][0] === bKingY && legalmovecheckerlist[i][1] === bKingX ){
               console.log("illegal");
               legalmoves.splice(a, 1);
               a--;
@@ -437,21 +475,29 @@ function pushCastle(color){
   if (color === "w"){
     if (!WhiteKingMoved && !WhiteShortMoved && grid[7][5] === "0" && grid[7][6] === "0"){
       returnlist.push([7, 6]);
-      CastleStatus = "wShort";
+      if (firstlegalmovecheck){
+       CastleStatus = "wShort";
+      }
     }
     if (!WhiteKingMoved && !WhiteLongMoved && grid[7][1] === "0" && grid[7][2] === "0" && grid[7][3] === "0"){
       returnlist.push([7, 2]);
-      CastleStatus = "wLong";
+      if (firstlegalmovecheck){
+        CastleStatus = "wLong";
+      }
     }
   }
   else{
     if (!BlackKingMoved && !BlackShortMoved && grid[0][5] === "0" && grid[0][6] === "0"){
       returnlist.push([0, 6]);
-      CastleStatus = "bShort";
+      if (firstlegalmovecheck){
+       CastleStatus = "bShort";
+      }
     }
     if (!BlackKingMoved && !BlackLongMoved && grid[0][1] === "0" && grid[0][2] === "0" && grid[0][3] === "0"){
       returnlist.push([0, 2]);
-      CastleStatus = "bLong";
+      if (firstlegalmovecheck){
+        CastleStatus = "bLong";
+      }
     }
   }
 }
