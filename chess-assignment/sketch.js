@@ -10,6 +10,9 @@ let cellsize;
 let chessboardheightcontroller;
 let grid = [];
 
+let checkmatemoves;
+let checkmate = false;
+
 let pieceSlected = false;
 let pieceStorer;
 let piecelocationstorerX;
@@ -59,7 +62,7 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   chessboardheightcontroller = height - 100;
   cellsize = chessboardheightcontroller/ROWS;
-  grid = startingGrid();
+  grid = startingGrid(3);
 }
 
 function draw() {
@@ -69,6 +72,18 @@ function draw() {
   highlightMoves();
   drawBoard();
   checkCastleMove();
+  lookForCheckmate();
+}
+
+function lookForCheckmate(){
+  if (checkmate){
+    pieceSlected = "checkmate"
+    textSize(200);
+    fill("black");
+    textAlign(CENTER, CENTER);
+    textFont('Helvetica');
+    text('CheckMate', width/2, height/2);
+  }
 }
 
 
@@ -87,18 +102,50 @@ function drawGrid() {
   }
 }
 
-function startingGrid(){
-  let tempGrid = [
-    ["bRook","bKnight","bBishop","bQueen", "bKing","bBishop", "bKnight", "bRook"],
-    ["bPawn", "bPawn", "bPawn", "bPawn", "bPawn", "bPawn", "bPawn", "bPawn",],
-    ["0", "0", "0", "0", "0", "0", "0", "0",],
-    ["0", "0", "0", "0", "0", "0", "0", "0",],
-    ["0", "0", "0", "0", "0", "0", "0", "0",],
-    ["0", "0", "0", "0", "0", "0", "0", "0",],
-    ["wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn",],
-    ["wRook","wKnight","wBishop","wQueen", "wKing","wBishop", "wKnight", "wRook"],
-  ];
-  return tempGrid;
+function startingGrid(number){
+  if (number === 1){
+    let tempGrid = [
+      ["bRook","bKnight","bBishop","bQueen", "bKing","bBishop", "bKnight", "bRook"],
+      ["bPawn", "bPawn", "bPawn", "bPawn", "bPawn", "bPawn", "bPawn", "bPawn",],
+      ["0", "0", "0", "0", "0", "0", "0", "0",],
+      ["0", "0", "0", "0", "0", "0", "0", "0",],
+      ["0", "0", "0", "0", "0", "0", "0", "0",],
+      ["0", "0", "0", "0", "0", "0", "0", "0",],
+      ["wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn",],
+      ["wRook","wKnight","wBishop","wQueen", "wKing","wBishop", "wKnight", "wRook"],
+    ];
+    return tempGrid;
+  }
+  else if (number === 2){
+    let tempGrid = [
+      ["0","0","0","0", "bKing","bBishop", "0", "bRook"],
+      ["bPawn", "0", "0", "bKnight", "0", "bPawn", "bPawn", "bPawn",],
+      ["0", "0", "0", "0", "bQueen", "0", "0", "0",],
+      ["0", "0", "0", "0", "bPawn", "0", "wBishop", "0",],
+      ["0", "0", "0", "0", "wPawn", "0", "0", "0",],
+      ["0", "wQueen", "0", "0", "0", "0", "0", "0",],
+      ["wPawn", "wPawn", "wPawn", "0", "0", "wPawn", "wPawn", "wPawn",],
+      ["0","0","wKing","wRook", "wKing","0", "0", "0"],
+    ];
+    wKingY = 7;
+    wKingX = 4;
+    bKingY = 0;
+    bKingX = 4;
+    return tempGrid;
+  }
+  else if (number === 3){
+    let tempGrid = [
+      ["0","0","0","0", "bKing","0", "0", "0"],
+      ["0", "0", "bPawn", "0", "0", "0", "0", "0",],
+      ["0", "0", "0", "0", "0", "0", "0", "0",],
+      ["0", "0", "0", "0", "0", "0", "0", "0",],
+      ["0", "0", "0", "0", "0", "0", "0", "0",],
+      ["0", "0", "0", "0", "0", "0", "0", "0",],
+      ["wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn", "wPawn",],
+      ["wRook","wKnight","wBishop","wQueen", "wKing","wBishop", "wKnight", "wRook"],
+    ];
+    return tempGrid;
+  }
 }
 
 function checkCastleMove(){
@@ -169,7 +216,7 @@ function mousePressed() {
         firstlegalmovecheck = true;
         legalmoves = createLegalMoveList(pieceStorer, piecelocationstorerX, piecelocationstorerY, grid);
         firstlegalmovecheck = false;
-        updateLegalmoveswithchecks();
+        updateLegalmoveswithchecks(legalmoves, pieceStorer, piecelocationstorerY, piecelocationstorerX);
       }
       else if (!Whiteturn &&  grid[y][x][0] === "b"){
         pieceStorer = grid[y][x];
@@ -179,7 +226,7 @@ function mousePressed() {
         firstlegalmovecheck = true;
         legalmoves = createLegalMoveList(pieceStorer, piecelocationstorerX, piecelocationstorerY, grid);
         firstlegalmovecheck = false;
-        updateLegalmoveswithchecks();
+        updateLegalmoveswithchecks(legalmoves, pieceStorer, piecelocationstorerY, piecelocationstorerX);
       }
     }
     else{
@@ -199,11 +246,13 @@ function mousePressed() {
         }
         if (pieceStorer === "bKing"){
           bKingY = y;
-          bkingX = x;
+          bKingX = x;
         }
         displayCastle();
+        pawnpromote();
         pieceSlected = false;
         legalmoves = [];
+        checkformate();
         Whiteturn = !Whiteturn;
       }
     }
@@ -216,60 +265,132 @@ function mousePressed() {
   }
 }
 
-function updateLegalmoveswithchecks(){
+function pawnpromote(){
+  for (let x = 0; x < ROWS; x++){
+    if (grid[0][x] === "wPawn"){
+      grid[0][x] = "wQueen"
+    }
+  }
+  for (let x = 0; x < ROWS; x++){
+    if (grid[7][x] === "bPawn"){
+      grid[7][x] = "bQueen"
+    }
+  }
+}
+
+function checkformate(){
+  let value = 0;
+  checkmatemoves = [];
+  if (Whiteturn){
+    for (let y = 0; y < ROWS; y++){
+      for (let x = 0; x < ROWS; x++){
+        if (grid[y][x][0] === "b"){
+          checkmatemoves = createLegalMoveList(grid[y][x], x, y, grid);
+          updateLegalmoveswithchecks(checkmatemoves, grid[y][x], y, x);
+          if (samemoves(checkmatemoves, y, x)){
+            value++;
+          }
+        }
+      }
+    }
+  }
+  else{
+    for (let y = 0; y < ROWS; y++){
+      for (let x = 0; x < ROWS; x++){
+        if (grid[y][x][0] === "w"){
+          checkmatemoves = createLegalMoveList(grid[y][x], x, y, grid);
+          updateLegalmoveswithchecks(checkmatemoves, grid[y][x], y, x);
+          if (samemoves(checkmatemoves, y, x)){
+            value++;
+          }
+        }
+      }
+    }
+  }
+  if (value === 0){
+    checkmate = true;
+    console.log("checkmate");
+  }
+}
+
+function samemoves(moves, theY, theX){
+  for (let i = 0; i < moves.length; i++){
+    if (moves[i][0] !== theY || moves[i][1] !== theX){
+      return true // there is a move
+    }
+  }
+  return false; // there is no move
+}
+
+function updateLegalmoveswithchecks(themoves, thepiece, pieceY, pieceX){
   let tempgrid = [];
-  for (let a = 0 ; a < legalmoves.length; a++){
+  let Wkingchecked = false;
+  let bkingchecked = false;
+  for (let a = 0 ; a  < themoves.length; a++){
     tempgrid = [];
     for (let y = 0; y<ROWS; y++){
       tempgrid.push([...grid[y]]);
     }
-    tempgrid[piecelocationstorerY][piecelocationstorerX] = "0";
-    tempgrid[legalmoves[a][0]][legalmoves[a][1]] = pieceStorer;
-    console.log(tempgrid);
+    tempgrid[pieceY][pieceX] = "0";
+    if (a === -1){
+      a = 0;
+    }
+    if (themoves.length === 0){ continue;}
+    tempgrid[themoves[a][0]][themoves[a][1]] = thepiece;
     for (let y = 0; y < ROWS; y++){
       for (let x = 0; x < ROWS; x++){
-        if (pieceStorer[1] === "K" && pieceStorer[2] === "i" && pieceStorer[0] === "w" && tempgrid[y][x][0] === "b"){
+        if (thepiece[1] === "K" && thepiece[2] === "i" && thepiece[0] === "w" && tempgrid[y][x][0] === "b"){
           legalmovecheckerlist = createLegalMoveList(tempgrid[y][x], x, y, tempgrid);
           for (let i = 0; i < legalmovecheckerlist.length; i++){
-            if (legalmoves[a][0] === legalmovecheckerlist[i][0] && legalmoves[a][1] === legalmovecheckerlist[i][1] ){
-              console.log("illegal");
-              legalmoves.splice(a, 1);
+            if (themoves[a][0] === legalmovecheckerlist[i][0] && themoves[a][1] === legalmovecheckerlist[i][1] ){
+              themoves.splice(a, 1);
+              console.log("illegal")
+              Wkingchecked = true
+              a--; 
+              i = 100000;
+            }
+          }
+        }
+        else if (thepiece[1] === "K" && thepiece[2] === "i" && thepiece[0] === "b" && tempgrid[y][x][0] === "w"){
+          legalmovecheckerlist = createLegalMoveList(tempgrid[y][x], x, y, tempgrid);
+          for (let i = 0; i < legalmovecheckerlist.length; i++){
+            if (themoves[a][0] === legalmovecheckerlist[i][0] && themoves[a][1] === legalmovecheckerlist[i][1] ){
+              themoves.splice(a, 1);
+              console.log("illegal")
+              bkingchecked = true
               a--;
               i = 100000;
             }
           }
         }
-        else if (pieceStorer[1] === "K" && pieceStorer[2] === "i" && pieceStorer[0] === "b" && tempgrid[y][x][0] === "w"){
-          legalmovecheckerlist = createLegalMoveList(tempgrid[y][x], x, y, tempgrid);
-          for (let i = 0; i < legalmovecheckerlist.length; i++){
-            if (legalmoves[a][0] === legalmovecheckerlist[i][0] && legalmoves[a][1] === legalmovecheckerlist[i][1] ){
-              console.log("illegal");
-              legalmoves.splice(a, 1);
-              a--;
-              i = 100000;
-            }
-          }
-        }
-        else if (pieceStorer[0] === "w" && tempgrid[y][x][0] === "b"){
+        else if (thepiece[0] === "w" && tempgrid[y][x][0] === "b"){
           legalmovecheckerlist = createLegalMoveList(tempgrid[y][x], x, y, tempgrid);
           for (let i = 0; i < legalmovecheckerlist.length; i++){
             if (legalmovecheckerlist[i][0] === wKingY && legalmovecheckerlist[i][1] === wKingX ){
-              console.log("illegal");
-              legalmoves.splice(a, 1);
+              themoves.splice(a, 1);
               a--;
+              i - 100000;
             }
           }
         }
-        else if (pieceStorer[0] === "b" && tempgrid[y][x][0] === "w"){
+        else if (thepiece[0] === "b" && tempgrid[y][x][0] === "w"){
           legalmovecheckerlist = createLegalMoveList(tempgrid[y][x], x, y, tempgrid);
           for (let i = 0; i < legalmovecheckerlist.length; i++){
             if (legalmovecheckerlist[i][0] === bKingY && legalmovecheckerlist[i][1] === bKingX ){
-              console.log("illegal");
-              legalmoves.splice(a, 1);
+              themoves.splice(a, 1);
               a--;
+              i = 1000000;
             }
           }
         }
+        if (Wkingchecked || bkingchecked){
+          x = 99;
+        }
+      }
+      if (Wkingchecked || bkingchecked){
+        y = 99;
+        Wkingchecked = false;
+        bkingchecked = false;
       }
     }
   }
@@ -303,7 +424,7 @@ function createLegalMoveList(piece, oldX, oldY, layout){
     if (layout[oldY -1][oldX-1] !== "0" && oldX-1 !== -1 && layout[oldY - 1][oldX -1][0] !== "w"){
       returnlist.push([oldY -1, oldX-1]);
     }
-    if (layout[oldY - 2][oldX] === "0" && layout[oldY - 1][oldX] === "0" && oldY === 6){
+    if (oldY === 6 && layout[oldY - 2][oldX] === "0" && layout[oldY - 1][oldX] === "0"){
       returnlist.push([oldY - 2, oldX]);
     }
   }
@@ -317,7 +438,7 @@ function createLegalMoveList(piece, oldX, oldY, layout){
     if (layout[oldY + 1][oldX -1] !== "0" && oldX - 1 >= 0 && layout[oldY + 1][oldX -1][0] !== "b"){
       returnlist.push([oldY +1,oldX - 1]);
     }
-    if (layout[oldY + 2][oldX] === "0" && layout[oldY + 1][oldX] === "0" && oldY === 1){
+    if (oldY === 1 && layout[oldY + 2][oldX] === "0" && layout[oldY + 1][oldX] === "0"){
       returnlist.push([oldY + 2, oldX]);
     }
 
@@ -403,6 +524,7 @@ function createLegalMoveList(piece, oldX, oldY, layout){
         }
       }
     }
+
   }
   if (piece[1] === "R" || piece[1] === "Q"){
     for (let x = 0; x< 8 -oldX; x++){
@@ -430,7 +552,7 @@ function createLegalMoveList(piece, oldX, oldY, layout){
       }
     }
     for (let x = 0; x<= 8 - (8 -oldX); x++){
-      if (layout[oldY][oldX][0] === "w" && layout[oldY] [oldX - x][0] === "b" ||layout[oldY][oldX][0] === "b" && layout[oldY] [oldX - x][0] === "w"){
+      if (layout[oldY][oldX][0] === "w" && layout[oldY][oldX - x][0] === "b" ||layout[oldY][oldX][0] === "b" && layout[oldY][oldX - x][0] === "w"){
         returnlist.push([oldY, oldX - x]);
         x = 999;
       }
@@ -486,7 +608,7 @@ function pushCastle(color){
       }
     }
   }
-  else{
+  if (color === "b"){
     if (!BlackKingMoved && !BlackShortMoved && grid[0][5] === "0" && grid[0][6] === "0"){
       returnlist.push([0, 6]);
       if (firstlegalmovecheck){
