@@ -76,7 +76,7 @@ function preload(){
 function setup() {
   
   // load up starting chess board, i have preset 2, 3, 4 as forced checkmate puzzles for white
-  grid = startingGrid(4);
+  grid = startingGrid(1);
   createCanvas(windowWidth, windowHeight);
 
   // varible for sizing
