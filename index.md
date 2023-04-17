@@ -5,3 +5,4 @@
 
 ## projects
 - [Arrays and Object Notation](array-assignment)
+- [Chess Assignment](chess-assignment)
