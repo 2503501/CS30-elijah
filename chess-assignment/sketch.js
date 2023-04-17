@@ -62,7 +62,7 @@ function setup() {
   createCanvas(windowWidth, windowHeight);
   chessboardheightcontroller = height - 100;
   cellsize = chessboardheightcontroller/ROWS;
-  grid = startingGrid(3);
+  grid = startingGrid(1);
 }
 
 function draw() {
