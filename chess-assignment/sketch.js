@@ -197,12 +197,12 @@ function mousePressed() {
 function pawnpromote(){
   for (let x = 0; x < ROWS; x++){
     if (grid[0][x] === "wPawn"){
-      grid[0][x] = "wQueen"
+      grid[0][x] = "wQueen";
     }
   }
   for (let x = 0; x < ROWS; x++){
     if (grid[7][x] === "bPawn"){
-      grid[7][x] = "bQueen"
+      grid[7][x] = "bQueen";
     }
   }
 }
@@ -210,12 +210,12 @@ function pawnpromote(){
 // will stop game if there is no more legal moves for a side
 function lookForCheckmate(){
   if (checkmate){
-    pieceSlected = "checkmate"
+    pieceSlected = "checkmate";
     textSize(200);
     fill("black");
     textAlign(CENTER, CENTER);
-    textFont('Helvetica');
-    text('CheckMate', width/2, height/2);
+    textFont("Helvetica");
+    text("CheckMate", width/2, height/2);
   }
 }
 
@@ -424,7 +424,7 @@ function checkformate(){
 function IsThereMove(moves, theY, theX){
   for (let i = 0; i < moves.length; i++){
     if (moves[i][0] !== theY || moves[i][1] !== theX){
-      return true // there is a move
+      return true; // there is a move
     }
   }
   return false; // there is no move
@@ -452,7 +452,9 @@ function updateLegalmoveswithchecks(themoves, thepiece, pieceY, pieceX){
     if (a === -1){
       a = 0;
     }
-    if (themoves.length === 0){ continue;}
+    if (themoves.length === 0){
+      { continue;}
+    }
 
     // if there is a piece it places it on the temp grid and will go through every move from the other color. if none of the moves from the other color hit the the kings y and x, then the move is legal
     tempgrid[themoves[a][0]][themoves[a][1]] = thepiece;
@@ -469,8 +471,8 @@ function updateLegalmoveswithchecks(themoves, thepiece, pieceY, pieceX){
             //if it does it white king y and x, removes that white move from the legalmoves list and exits the loop
             if (themoves[a][0] === legalmovecheckerlist[i][0] && themoves[a][1] === legalmovecheckerlist[i][1] ){
               themoves.splice(a, 1);
-              console.log("illegal")
-              Wkingchecked = true
+              console.log("illegal");
+              Wkingchecked = true;
               a--; 
               i = 100000;
             }
@@ -487,8 +489,8 @@ function updateLegalmoveswithchecks(themoves, thepiece, pieceY, pieceX){
             //if it does it black king y and x, removes that king move from the legalmoves list and exits the loop
             if (themoves[a][0] === legalmovecheckerlist[i][0] && themoves[a][1] === legalmovecheckerlist[i][1] ){
               themoves.splice(a, 1);
-              console.log("illegal")
-              bkingchecked = true
+              console.log("illegal");
+              bkingchecked = true;
               a--;
               i = 100000;
             }
@@ -544,15 +546,15 @@ function updateLegalmoveswithchecks(themoves, thepiece, pieceY, pieceX){
 
 // checks to see if the spot you clicked is on the list of legal moves
 function legalMovechecker( newX, newY){
-  console.log(newY)
-  console.log(newX)
+  console.log(newY);
+  console.log(newX);
   for (let i = 0; i < legalmoves.length; i++){
     if (newY === legalmoves[i][0] && newX === legalmoves[i][1]){
-      console.log("true")
+      console.log("true");
       return true;
     }
   }
-  console.log("false")
+  console.log("false");
   return false;
 }
 
@@ -731,7 +733,7 @@ function createLegalMoveList(piece, oldX, oldY, layout){
         x = 999;
       }
 
-       // if the move hits a piece of same color, it ends the loop
+      // if the move hits a piece of same color, it ends the loop
       else if (x !== 0 && layout[oldY][oldX][0] === "w" && layout[oldY] [oldX + x][0] === "w" ||x !== 0 && layout[oldY][oldX][0] === "b" && layout[oldY] [oldX + x][0] === "b"){
         x = 999;
       }
@@ -832,7 +834,7 @@ function pushCastle(color){
     if (!WhiteKingMoved && !WhiteShortMoved && grid[7][5] === "0" && grid[7][6] === "0"){
       returnlist.push([7, 6]);
       if (firstlegalmovecheck){
-       CastleStatus = "wShort";
+        CastleStatus = "wShort";
       }
     }
     if (!WhiteKingMoved && !WhiteLongMoved && grid[7][1] === "0" && grid[7][2] === "0" && grid[7][3] === "0"){
@@ -846,7 +848,7 @@ function pushCastle(color){
     if (!BlackKingMoved && !BlackShortMoved && grid[0][5] === "0" && grid[0][6] === "0"){
       returnlist.push([0, 6]);
       if (firstlegalmovecheck){
-       CastleStatus = "bShort";
+        CastleStatus = "bShort";
       }
     }
     if (!BlackKingMoved && !BlackLongMoved && grid[0][1] === "0" && grid[0][2] === "0" && grid[0][3] === "0"){
